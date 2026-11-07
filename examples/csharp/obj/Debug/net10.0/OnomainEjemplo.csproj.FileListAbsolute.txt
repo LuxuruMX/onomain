@@ -1,0 +1,14 @@
+/home/luxuru/proyectos/onomain/examples/csharp/bin/Debug/net10.0/OnomainEjemplo
+/home/luxuru/proyectos/onomain/examples/csharp/bin/Debug/net10.0/OnomainEjemplo.deps.json
+/home/luxuru/proyectos/onomain/examples/csharp/bin/Debug/net10.0/OnomainEjemplo.runtimeconfig.json
+/home/luxuru/proyectos/onomain/examples/csharp/bin/Debug/net10.0/OnomainEjemplo.dll
+/home/luxuru/proyectos/onomain/examples/csharp/bin/Debug/net10.0/OnomainEjemplo.pdb
+/home/luxuru/proyectos/onomain/examples/csharp/obj/Debug/net10.0/OnomainEjemplo.GeneratedMSBuildEditorConfig.editorconfig
+/home/luxuru/proyectos/onomain/examples/csharp/obj/Debug/net10.0/OnomainEjemplo.AssemblyInfoInputs.cache
+/home/luxuru/proyectos/onomain/examples/csharp/obj/Debug/net10.0/OnomainEjemplo.AssemblyInfo.cs
+/home/luxuru/proyectos/onomain/examples/csharp/obj/Debug/net10.0/OnomainEjemplo.csproj.CoreCompileInputs.cache
+/home/luxuru/proyectos/onomain/examples/csharp/obj/Debug/net10.0/OnomainEjemplo.dll
+/home/luxuru/proyectos/onomain/examples/csharp/obj/Debug/net10.0/refint/OnomainEjemplo.dll
+/home/luxuru/proyectos/onomain/examples/csharp/obj/Debug/net10.0/OnomainEjemplo.pdb
+/home/luxuru/proyectos/onomain/examples/csharp/obj/Debug/net10.0/OnomainEjemplo.genruntimeconfig.cache
+/home/luxuru/proyectos/onomain/examples/csharp/obj/Debug/net10.0/ref/OnomainEjemplo.dll

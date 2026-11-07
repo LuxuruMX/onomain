@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "FnadyvtdQ4k=",
+  "success": true,
+  "projectFilePath": "/home/luxuru/proyectos/onomain/examples/csharp/OnomainEjemplo.csproj",
+  "expectedPackageFiles": [
+    "/home/luxuru/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.13/microsoft.aspnetcore.app.ref.10.0.13.nupkg.sha512"
+  ],
+  "logs": []
+}
