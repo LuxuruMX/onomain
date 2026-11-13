@@ -1,14 +1,22 @@
 //! Generador reproducible de palabras inventadas por familias sonoras.
 
 mod ffi;
+mod ffi_numeric;
 mod generator;
 mod inventory;
 mod profile;
+mod profile_summary;
+mod prosody;
 mod rng;
 mod similarity;
+mod style_base;
+mod word;
 
 pub use generator::Generador;
 pub use profile::Estilo;
+pub use profile_summary::PerfilResumen;
+pub use prosody::Acento;
+pub use word::PalabraDetallada;
 
 use std::fmt;
 

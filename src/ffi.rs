@@ -7,9 +7,24 @@ thread_local! {
     static ULTIMO_ERROR: Cell<u32> = const { Cell::new(0) };
 }
 
-fn error(codigo: u32) -> *mut c_char {
+pub(crate) fn error(codigo: u32) -> *mut c_char {
     ULTIMO_ERROR.set(codigo);
     std::ptr::null_mut()
+}
+
+pub(crate) fn resultado(json: String) -> *mut c_char {
+    ULTIMO_ERROR.set(0);
+    CString::new(json)
+        .expect("la salida solo contiene letras ASCII")
+        .into_raw()
+}
+
+pub(crate) fn json_palabras(palabras: &[String]) -> String {
+    if palabras.is_empty() {
+        "[]".to_owned()
+    } else {
+        format!("[\"{}\"]", palabras.join("\",\""))
+    }
 }
 
 fn estilo_desde_numero(numero: u32) -> Option<Estilo> {
@@ -80,16 +95,7 @@ pub unsafe extern "C" fn onomain_generar_varias(
         Err(Error::CantidadExcesiva) => return error(5),
         Err(_) => return error(6),
     };
-    let json = format!("[\"{}\"]", palabras.join("\",\""));
-    let json = if palabras.is_empty() {
-        "[]".to_owned()
-    } else {
-        json
-    };
-    ULTIMO_ERROR.set(0);
-    CString::new(json)
-        .expect("solo se generan letras ASCII")
-        .into_raw()
+    resultado(json_palabras(&palabras))
 }
 
 /// Código del último error en este hilo: 0=ninguno, 1=puntero/cantidad de

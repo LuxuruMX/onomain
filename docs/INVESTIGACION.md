@@ -9,6 +9,18 @@ importan: un grupo permitido al principio puede estar prohibido al final.
 La gramática y la morfología afectan las familias de palabras, pero esta
 primera versión solo genera formas léxicas, sin significados ni flexiones.
 
+## Por qué estas lenguas
+
+Se eligieron como **muestra exploratoria de mecanismos distintos** y por
+disponer de descripciones académicas verificables: sílabas simples,
+agrupaciones consonánticas, codas, tono, acento, mora, armonía vocálica y
+morfología no lineal. No son «las 14 más importantes», ni representan por
+igual a todas las regiones o familias lingüísticas. Muchas comparten rasgos
+porque CV y ciertos tipos de ataque son muy comunes; otras presentan
+contrastes que este generador aún no puede expresar. La selección tiene
+sesgo de documentación accesible y debe ampliarse con corpus y revisión
+de especialistas si se busca cobertura tipológica seria.
+
 ## Frecuencia y límites de las generalizaciones
 
 [WALS 12A](https://wals.info/feature/12A) clasifica 486 lenguas de su muestra:
@@ -94,8 +106,9 @@ ortográficas sin esas funciones sería una imitación superficial.
 
 ## Traducción a un generador inventado
 
-El perfil de cada semilla fija un subconjunto de ataques, vocales, diptongos y
-codas. Un motivo inicial y un cierre recurren con cierta probabilidad. Las
+El número de semilla fija un subconjunto de ataques, vocales, diptongos y
+codas, además de longitud, probabilidades y acento sugerido. Un motivo
+inicial y un cierre recurren con cierta probabilidad. Las
 sílabas abiertas son comunes; los diptongos y codas se dosifican. `grave`
 prioriza más sílabas y grupos consonánticos; `suave` permite palabras cortas;
 `fluido` favorece CV; `cortante` admite `tl`, `tz` y `ch` en varias posiciones.

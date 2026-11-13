@@ -46,3 +46,17 @@ pub(crate) fn hash_seeds(seeds: &[&str]) -> u64 {
     }
     hash
 }
+
+/// Dominio separado de las semillas de texto; conserva los 64 bits de cada número.
+pub(crate) fn hash_numeros(seeds: &[u64]) -> u64 {
+    let mut hash = 0x8b6d_4f4e_4f4d_4149_u64;
+    for byte in (seeds.len() as u64)
+        .to_le_bytes()
+        .into_iter()
+        .chain(seeds.iter().flat_map(|n| n.to_le_bytes()))
+    {
+        hash ^= u64::from(byte);
+        hash = hash.wrapping_mul(0x0000_0100_0000_01b3);
+    }
+    hash
+}

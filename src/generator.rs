@@ -1,7 +1,9 @@
 use crate::Error;
 use crate::profile::{Estilo, Perfil};
-use crate::rng::{Rng, hash_seeds};
+use crate::profile_summary::PerfilResumen;
+use crate::rng::{Rng, hash_numeros, hash_seeds};
 use crate::similarity::Indice;
+use crate::word::PalabraDetallada;
 
 /// Una familia estable de palabras inventadas.
 pub struct Generador {
@@ -10,6 +12,27 @@ pub struct Generador {
 }
 
 impl Generador {
+    /// La semilla numérica fija todo el perfil de la familia.
+    pub fn desde_numero(semilla: u64) -> Self {
+        let hash = hash_numeros(&[semilla]);
+        Self {
+            hash,
+            perfil: Perfil::nuevo(hash, Estilo::Automatico),
+        }
+    }
+
+    /// Combina varias semillas numéricas en orden.
+    pub fn desde_numeros(semillas: &[u64]) -> Result<Self, Error> {
+        if semillas.is_empty() {
+            return Err(Error::SinSemillas);
+        }
+        let hash = hash_numeros(semillas);
+        Ok(Self {
+            hash,
+            perfil: Perfil::nuevo(hash, Estilo::Automatico),
+        })
+    }
+
     /// El orden y los bytes UTF-8 de las semillas forman parte de la identidad.
     pub fn nuevo(semillas: &[&str], estilo: Estilo) -> Result<Self, Error> {
         if semillas.is_empty() {
@@ -29,9 +52,19 @@ impl Generador {
         self.perfil.estilo
     }
 
+    pub fn perfil(&self) -> PerfilResumen {
+        PerfilResumen::from(&self.perfil)
+    }
+
     /// Devuelve exactamente `cantidad` palabras o un error explícito.
     /// Cada par del lote tiene distancia de Levenshtein de al menos 3.
     pub fn generar(&self, cantidad: usize) -> Result<Vec<String>, Error> {
+        self.generar_detalladas(cantidad)
+            .map(|palabras| palabras.into_iter().map(|p| p.texto).collect())
+    }
+
+    /// Incluye la silabificación y el acento que eligió la semilla.
+    pub fn generar_detalladas(&self, cantidad: usize) -> Result<Vec<PalabraDetallada>, Error> {
         if cantidad > 10_000 {
             return Err(Error::CantidadExcesiva);
         }
@@ -49,7 +82,7 @@ impl Generador {
             intentos += 1;
             let silabas_extra = (fallos_seguidos / 500).min(3);
             let palabra = self.crear_palabra(&mut rng, silabas_extra);
-            if !(3..=32).contains(&palabra.len()) || !indice.acepta(palabra.clone()) {
+            if !(3..=32).contains(&palabra.texto.len()) || !indice.acepta(palabra.texto.clone()) {
                 fallos_seguidos += 1;
                 continue;
             }
@@ -59,15 +92,11 @@ impl Generador {
         Ok(resultado)
     }
 
-    fn crear_palabra(&self, rng: &mut Rng, extra: usize) -> String {
+    fn crear_palabra(&self, rng: &mut Rng, extra: usize) -> PalabraDetallada {
         let perfil = &self.perfil;
-        let total = match perfil.estilo {
-            Estilo::Suave if rng.chance(14) => 1,
-            Estilo::Grave => 3 + usize::from(rng.chance(25)),
-            Estilo::Fluido | Estilo::Cortante if rng.chance(22) => 4,
-            _ => perfil.min_silabas + rng.below(perfil.max_silabas - perfil.min_silabas + 1),
-        } + extra;
-        let mut palabra = String::with_capacity(total * 4);
+        let total =
+            perfil.min_silabas + rng.below(perfil.max_silabas - perfil.min_silabas + 1) + extra;
+        let mut silabas = Vec::with_capacity(total);
         let mut coda_anterior = false;
         let mut ultima_vocal = "";
 
@@ -76,7 +105,11 @@ impl Generador {
             let ultimo = posicion + 1 == total;
             let ataque = if !primero && coda_anterior && rng.chance(perfil.ataque_vacio) {
                 ""
-            } else if rng.chance(if primero { 34 } else { 16 }) {
+            } else if rng.chance(if primero {
+                perfil.motivo_inicio
+            } else {
+                perfil.motivo_interno
+            }) {
                 perfil.motivo
             } else {
                 perfil.ataques[rng.below(perfil.ataques.len())]
@@ -99,8 +132,9 @@ impl Generador {
             if vocal == ultima_vocal && rng.chance(75) {
                 vocal = perfil.vocales[rng.below(perfil.vocales.len())];
             }
-            palabra.push_str(ataque);
-            palabra.push_str(vocal);
+            let mut silaba = String::with_capacity(ataque.len() + vocal.len() + 2);
+            silaba.push_str(ataque);
+            silaba.push_str(vocal);
             ultima_vocal = vocal;
             coda_anterior = rng.chance(if ultimo {
                 perfil.coda_final
@@ -108,15 +142,21 @@ impl Generador {
                 perfil.coda_interna
             });
             if coda_anterior {
-                let coda = if ultimo && rng.chance(35) {
+                let coda = if ultimo && rng.chance(perfil.cierre_prob) {
                     perfil.cierre
                 } else {
                     perfil.codas[rng.below(perfil.codas.len())]
                 };
-                palabra.push_str(coda);
+                silaba.push_str(coda);
             }
+            silabas.push(silaba);
         }
-        palabra
+        let texto = silabas.concat();
+        PalabraDetallada {
+            texto,
+            silabas,
+            tonica: perfil.acento.indice(total),
+        }
     }
 }
 

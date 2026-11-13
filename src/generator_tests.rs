@@ -55,3 +55,25 @@ fn entradas_invalidas_y_cero() {
         Error::CantidadExcesiva
     );
 }
+
+#[test]
+fn numero_define_perfil_y_acento() {
+    let uno = Generador::desde_numero(12345);
+    let otra_vez = Generador::desde_numeros(&[12345]).unwrap();
+    let distinto = Generador::desde_numero(12346);
+    assert_eq!(uno.perfil(), otra_vez.perfil());
+    assert_ne!(uno.perfil(), distinto.perfil());
+    let palabras = uno.generar_detalladas(30).unwrap();
+    assert_eq!(
+        palabras.iter().map(|p| p.texto.clone()).collect::<Vec<_>>(),
+        uno.generar(30).unwrap()
+    );
+    for palabra in palabras {
+        assert_eq!(palabra.texto, palabra.silabas.concat());
+        assert!(palabra.tonica < palabra.silabas.len());
+        assert_eq!(
+            palabra.guia().replace('-', "").to_ascii_lowercase(),
+            palabra.texto
+        );
+    }
+}
